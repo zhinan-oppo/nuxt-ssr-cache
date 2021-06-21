@@ -46,7 +46,6 @@ function redisClusterCache(config) {
       nodes: config.nodes,
       options: config.options,
     },
-    ...config,
   });
 }
 

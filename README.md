@@ -1,14 +1,16 @@
 # nuxt-ssr-cache
+
 [![NPM version](https://img.shields.io/npm/v/nuxt-ssr-cache.svg)](https://www.npmjs.com/package/nuxt-ssr-cache)
 
 Cache middleware for nuxt's SSR rendering.
 
 ## Setup
-```npm install nuxt-ssr-cache```
+
+`npm install nuxt-ssr-cache`
 
 or
 
-```yarn add nuxt-ssr-cache```
+`yarn add nuxt-ssr-cache`
 
 then inside your `nuxt.config.js` add cache config:
 
@@ -21,9 +23,7 @@ module.exports = {
 
   // ....
 
-  modules: [
-      'nuxt-ssr-cache',
-  ],
+  modules: ["nuxt-ssr-cache"],
   cache: {
     // if you're serving multiple host names (with differing
     // results) from the same server, set this option to true.
@@ -35,24 +35,24 @@ module.exports = {
     pages: [
       // these are prefixes of pages that need to be cached
       // if you want to cache all pages, just include '/'
-      '/page1',
-      '/page2',
+      "/page1",
+      "/page2",
 
       // you can also pass a regular expression to test a path
       /^\/page3\/\d+$/,
 
       // to cache only root route, use a regular expression
-      /^\/$/
+      /^\/$/,
     ],
-    
+
     key(route, context) {
       // custom function to return cache key, when used previous
-      // properties (useHostPrefix, pages) are ignored. return 
+      // properties (useHostPrefix, pages) are ignored. return
       // falsy value to bypass the cache
     },
 
     store: {
-      type: 'memory',
+      type: "memory",
 
       // maximum number of pages to store in memory
       // if limit is reached, least recently used page
@@ -69,45 +69,80 @@ module.exports = {
 ```
 
 ### `redis` store
+
 ```javascript
 module.exports = {
   // ....
   cache: {
     // ....
     store: {
-      type: 'redis',
-      host: 'localhost',
+      type: "redis",
+      host: "localhost",
       ttl: 10 * 60,
       configure: [
         // these values are configured
         // on redis upon initialization
-        ['maxmemory', '200mb'],
-        ['maxmemory-policy', 'allkeys-lru'],
+        ["maxmemory", "200mb"],
+        ["maxmemory-policy", "allkeys-lru"],
       ],
     },
   },
-}
+};
 ```
+
 Uses [cache-manager-redis](https://www.npmjs.com/package/cache-manager-redis) under the hood.
 
-### `memcached` store
+### `redisCluster` store
+
 ```javascript
 module.exports = {
   // ....
   cache: {
     // ....
     store: {
-      type: 'memcached',
+      type: 'redisCluster',
+      nodes: [
+        { host: '192.168.0.11' },
+        { host: '192.168.0.12' },
+        { host: '192.168.0.13' }
+      ],
       options: {
-        hosts: ['127.0.0.1:11211'],
-      },
+        ttl: 10 * 60
+        configure: [
+          // these values are configured
+          // on redis upon initialization
+          ['maxmemory', '200mb'],
+          ['maxmemory-policy', 'allkeys-lru'],
+        ],
+      }
     },
   },
 }
 ```
+
+Uses [cache-manager-ioredis](https://www.npmjs.com/package/cache-manager-ioredis) under the hood.
+
+### `memcached` store
+
+```javascript
+module.exports = {
+  // ....
+  cache: {
+    // ....
+    store: {
+      type: "memcached",
+      options: {
+        hosts: ["127.0.0.1:11211"],
+      },
+    },
+  },
+};
+```
+
 Uses [cache-manager-memcached-store](https://www.npmjs.com/package/cache-manager-memcached-store) under the hood.
 
 ### `multi` cache (layered)
+
 ```javascript
 module.exports = {
   // ....
@@ -118,15 +153,13 @@ module.exports = {
       // later tries to read them in sequential order
       // in this example it first tries to read from memory
       // if not found, it tries to read from redis
-      type: 'multi',
-      stores: [
-        { type: 'memory', /* ... */ },
-        { type: 'redis', /* ... */ },
-      ],
+      type: "multi",
+      stores: [{ type: "memory" /* ... */ }, { type: "redis" /* ... */ }],
     },
   },
-}
+};
 ```
 
 ## License
+
 MIT
